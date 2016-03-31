@@ -1,37 +1,69 @@
 package com.github.maykeye.arithtest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 
-/**
- * Unit test for simple App.
- */
-@RunWith(Parameterized.class)
-public class ArithTest
+import ru.yandex.qatools.allure.annotations.Parameter;
+
+/*
+ Expectes test.dat of form
+
+ operand1;operand2;operation;result
+ operand1;operand2;operation;result
+ operand1;operand2;operation;result
+ operand1;operand2;operation;result
+
+
+*/
+abstract class ArithTest
 {
-    @Parameters(name="{index} -- ArithTest of {0} {2} {1} = {3}")
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {
-                {0,0,"+",0},
-                {1,1,"/",1},
-                {2,1,"*",2},
-                {2,1,"??",2},
-                {2,0,"/",2},
-                {1,-1,"-",2},
-        });
-    }
+    static Map<String, ArrayList<Object[]>> lines;
 
-    private int operand1;
-    private int operand2;
-    private int expected;
-    private String operation;
+
+    @Parameter("Operand1")
+    protected int operand1;
+
+    @Parameter("Operand2")
+    protected int operand2;
+
+    @Parameter("Operation")
+    protected String operation;
+
+    @Parameter("Expected")
+    protected int expected;
+
+    protected static Collection<Object[]> data(String oper) {
+        if (lines == null){
+            lines = new HashMap<String, ArrayList<Object[]>>();
+            lines.put("+", new ArrayList<Object[]>());
+            lines.put("-", new ArrayList<Object[]>());
+            lines.put("*", new ArrayList<Object[]>());
+            lines.put("/", new ArrayList<Object[]>());
+
+            final InputStream resourceAsStream = ArithTest.class.getClassLoader().getResourceAsStream("test.dat");
+            assert resourceAsStream != null : "Can't open test.dat resource";
+
+            final Scanner scanner = new Scanner(new BufferedInputStream(resourceAsStream));
+            int lineNo=0;
+            while(scanner.hasNextLine()){
+                final String[] fields = scanner.nextLine().split(";");
+                lineNo++;
+                assert fields.length == 4 : String.format("Expected 4 fields at line %d", lineNo);
+                assert fields[2].length() == 1 && "+-*/".contains(fields[2]) : String.format("Invalid operation at line %d", lineNo);
+
+                ArrayList<Object[]> list = lines.get(fields[2]);
+                list.add(new Object[]{
+                    Integer.parseInt(fields[0]),
+                    Integer.parseInt(fields[1]),
+                    fields[2],
+                    Integer.parseInt(fields[3]),
+                });
+            }
+        }
+        return lines.get(oper);
+    }
 
     public ArithTest(int operand1, int operand2, String operation, int expected){
         this.operand1 = operand1;
@@ -39,25 +71,5 @@ public class ArithTest
         this.operation = operation;
         this.expected = expected;
     }
-
-    @Test
-    public void implTest(){
-        int actual=0;
-
-        if ("+".equals(operation)){
-            actual = operand1+operand2;
-        } else if ("-".equals(operation)) {
-            actual = operand1-operand2;
-        } else if ("*".equals(operation)) {
-            actual = operand1*operand2;
-        } else if ("/".equals(operation)) {
-            actual = operand1/operand2;
-        } else {
-            fail(String.format("Unexpected operation %s", operation));
-        }
-
-        assertEquals(expected, actual);
-    }
-
-
 }
+
