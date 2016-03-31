@@ -57,8 +57,6 @@ public class ArithTest
         }
 
         assertEquals(expected, actual);
-
-
     }
 
 
