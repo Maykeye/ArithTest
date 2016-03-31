@@ -50,16 +50,28 @@ abstract class ArithTest
             while(scanner.hasNextLine()){
                 final String[] fields = scanner.nextLine().split(";");
                 lineNo++;
-                assert fields.length == 4 : String.format("Expected 4 fields at line %d", lineNo);
-                assert fields[2].length() == 1 && "+-*/".contains(fields[2]) : String.format("Invalid operation at line %d", lineNo);
+
+                if (fields.length != 4) {
+                    System.err.printf("Expected 4 fields at line %d\n", lineNo);
+                    continue;
+                }
+
+                if (fields[2].length() != 1 || !"+-*/".contains(fields[2])) {
+                    System.err.printf("Invalid operation at line %d\n", lineNo);
+                    continue;
+                }
 
                 ArrayList<Object[]> list = lines.get(fields[2]);
-                list.add(new Object[]{
-                    Integer.parseInt(fields[0]),
-                    Integer.parseInt(fields[1]),
-                    fields[2],
-                    Integer.parseInt(fields[3]),
-                });
+                try {
+                    list.add(new Object[]{
+                            Integer.parseInt(fields[0]),
+                            Integer.parseInt(fields[1]),
+                            fields[2],
+                            Integer.parseInt(fields[3]),
+                    });
+                } catch (NumberFormatException ex) {
+                    System.err.printf("Invalid operands/result in line %d\n", lineNo);
+                }
             }
         }
         return lines.get(oper);
