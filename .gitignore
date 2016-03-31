@@ -1,4 +1,4 @@
-arith-test/target/
+target/
 .idea/
 *.swp
 *.iml
