@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import java.util.*;
 
+import org.junit.Test;
 import ru.yandex.qatools.allure.annotations.Parameter;
 
 /*
@@ -17,7 +18,7 @@ import ru.yandex.qatools.allure.annotations.Parameter;
 
 
 */
-abstract class ArithTest
+abstract public class ArithTest
 {
     static Map<String, ArrayList<Object[]>> lines;
 
@@ -76,6 +77,9 @@ abstract class ArithTest
         }
         return lines.get(oper);
     }
+
+    @Test
+    abstract public void doTest();
 
     public ArithTest(int operand1, int operand2, String operation, int expected){
         this.operand1 = operand1;

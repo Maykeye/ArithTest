@@ -1,6 +1,5 @@
 package com.github.maykeye.arithtest;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ru.yandex.qatools.allure.annotations.Title;
@@ -20,8 +19,8 @@ public class ArithMultiplicationTest extends ArithTest
         super(operand1, operand2, operation, expected);
     }
 
-    @Test
-    public void testMultiplication(){
+    @Override
+    public void doTest(){
         int actual = operand1 * operand2;
         assertEquals(expected, actual);
     }

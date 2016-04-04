@@ -1,6 +1,5 @@
 package com.github.maykeye.arithtest;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ru.yandex.qatools.allure.annotations.Title;
@@ -21,8 +20,8 @@ public class ArithDivisionTest extends ArithTest
         super(operand1, operand2, operation, expected);
     }
 
-    @Test
-    public void testDivision(){
+    @Override
+    public void doTest(){
         assertNotEquals("division by zero", 0, operand2);
         int actual = operand1 / operand2;
         assertEquals(expected, actual);
